@@ -20,13 +20,8 @@
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="TLP - test =Simple=.cpp">
+    <ClCompile Include="TLP - test.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-  </ItemGroup>
-  <ItemGroup>
-    <Text Include="TLP - test.cpp">
-      <Filter>Source Files</Filter>
-    </Text>
   </ItemGroup>
 </Project>

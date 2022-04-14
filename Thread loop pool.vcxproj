@@ -171,8 +171,7 @@
     <ClInclude Include="ThreadLoopPool.h" />
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="TLP - test =Simple=.cpp" />
-    <Text Include="TLP - test.cpp" />
+    <ClCompile Include="TLP - test.cpp" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

@@ -1,4 +1,23 @@
-﻿#pragma once
+﻿/**********************************************
+* ~ DinamicThreadPool ~
+* A generic class ment to help with threading over a certion function.
+* This the the Dinamic Thread Loop version.
+* On this version, the main functoin accures outside this file by the user.
+* Most of the parameters, including the `range` the functoin check,
+* should be implomented manually by the user.
+* This making DinamicLoopPool more versitile for other
+* dinamic threding necessities, that don't necceserily
+* include repitting the same loop.
+*
+* The function needs to receve 2 arguments:
+* 1) range - Usfule especially for loops
+* 2) other - This will mostly be a struct of the parameters the function should receive
+* 
+* The assigne finction works the same...
+***********************************************/
+
+
+#pragma once
 #include <iostream>
 #include <thread>
 #include <chrono>
@@ -27,14 +46,14 @@ using MapIter = unordered_map<thread::id, bool>::iterator;
 
 /*Class*/
 
-template<typename FuncType=void(*)(int, int), typename BigNumType=int, typename WorkType = int>
+template<typename FuncType=void(*)(int, int), typename BigNumType=int, typename Struct = int>
 class ThreadLoopPool
 {
 public:
 	
 	ThreadLoopPool();
 
-	ThreadLoopPool(FuncType func, WorkType obj);
+	ThreadLoopPool(FuncType func, Struct obj);
 
 	//ThreadLoopPool(void(*f)());
 	//~ThreadLoopPool();
@@ -47,7 +66,7 @@ public:
 	condition_variable Tfunc;
 	unordered_map<thread::id, bool> mp;
 	CpuUsage usage;
-	WorkType obj;
+	Struct obj;
 	FuncType func;
 	//void(*func)(BigNumType range, WorkType obj);
 
@@ -55,7 +74,7 @@ public:
 	BigNumType step_leangth = BigNumType(1);
 	unsigned int delay = 0;
 
-	void linkTheFunc(FuncType f, WorkType obj);
+	void linkTheFunc(FuncType f, Struct obj);
 
 	void wrapperFunc();
 
@@ -81,14 +100,14 @@ private:
 
 /*Definnitions*/
 
-template<typename FuncType, typename BigNumType, typename WorkType>
-ThreadLoopPool<FuncType, BigNumType, WorkType>::ThreadLoopPool()
+template<typename FuncType, typename BigNumType, typename Struct>
+ThreadLoopPool<FuncType, BigNumType, Struct>::ThreadLoopPool()
 {
 	LOG("The empty constructer is working!");
 }
 
-template<typename FuncType, typename BigNumType, typename WorkType>
-ThreadLoopPool<FuncType, BigNumType, WorkType>::ThreadLoopPool(FuncType f, WorkType obj) :
+template<typename FuncType, typename BigNumType, typename Struct>
+ThreadLoopPool<FuncType, BigNumType, Struct>::ThreadLoopPool(FuncType f, Struct obj) :
 func{ f },
 obj{ obj },
 step_leangth(set_step_leangth())
@@ -96,8 +115,8 @@ step_leangth(set_step_leangth())
 	LOG("The ACTUAL constructer is working!");
 }
 
-template<typename FuncType, typename BigNumType, typename WorkType>
-void ThreadLoopPool<FuncType, BigNumType, WorkType>::linkTheFunc(FuncType f, WorkType obj)
+template<typename FuncType, typename BigNumType, typename Struct>
+void ThreadLoopPool<FuncType, BigNumType, Struct>::linkTheFunc(FuncType f, Struct obj)
 {
 	this->func = f;
 	this->obj = obj;
@@ -107,9 +126,9 @@ void ThreadLoopPool<FuncType, BigNumType, WorkType>::linkTheFunc(FuncType f, Wor
 	}
 }
 
-template<typename FuncType, typename BigNumType, typename WorkType>
+template<typename FuncType, typename BigNumType, typename Struct>
 template<typename AssigneFuncType, typename TypeArg>
-void ThreadLoopPool<FuncType, BigNumType, WorkType>::wrapperAssigne(AssigneFuncType func, TypeArg arg)
+void ThreadLoopPool<FuncType, BigNumType, Struct>::wrapperAssigne(AssigneFuncType func, TypeArg arg)
 {
 	if (muDone.try_lock())
 	{
@@ -126,8 +145,8 @@ void ThreadLoopPool<FuncType, BigNumType, WorkType>::wrapperAssigne(AssigneFuncT
 	}
 }
 
-template<typename FuncType, typename BigNumType, typename WorkType> // V
-void ThreadLoopPool<FuncType, BigNumType, WorkType>::wrapperFunc()
+template<typename FuncType, typename BigNumType, typename Struct> // V
+void ThreadLoopPool<FuncType, BigNumType, Struct>::wrapperFunc()
 {
 	bool another_run;
 	BigNumType range;
@@ -145,7 +164,7 @@ void ThreadLoopPool<FuncType, BigNumType, WorkType>::wrapperFunc()
 		}
 
 									 // The main function
-		this->func(range,this->obj); // לפי הגרסה הזו, בתוך הפונק של הלקוח אמורה להיות הבדיקה של נכון או לא
+		func(range, obj); // לפי הגרסה הזו, בתוך הפונק של הלקוח אמורה להיות הבדיקה של נכון או לא
 
 		this->muMap.lock();
 		another_run = this->mp[this_thread::get_id()] == true;
@@ -162,8 +181,8 @@ void ThreadLoopPool<FuncType, BigNumType, WorkType>::wrapperFunc()
 	}
 }
 
-template<typename FuncType, typename BigNumType, typename WorkType> // V
-void ThreadLoopPool<FuncType, BigNumType, WorkType>::update_map(unordered_map<thread::id, bool>& u_map, int range)
+template<typename FuncType, typename BigNumType, typename Struct> // V
+void ThreadLoopPool<FuncType, BigNumType, Struct>::update_map(unordered_map<thread::id, bool>& u_map, int range)
 { // range = now avalible threads
 	unsigned short prviosOnThreads = 0;
 
@@ -200,8 +219,8 @@ void ThreadLoopPool<FuncType, BigNumType, WorkType>::update_map(unordered_map<th
 
 }
 
-template<typename FuncType, typename BigNumType, typename WorkType> // V
-short ThreadLoopPool<FuncType, BigNumType, WorkType>::check_useg()
+template<typename FuncType, typename BigNumType, typename Struct> // V
+short ThreadLoopPool<FuncType, BigNumType, Struct>::check_useg()
 {
 	CpuUsage::CpuValues cpuValues = this->usage.GetUsage();
 
@@ -244,8 +263,8 @@ short ThreadLoopPool<FuncType, BigNumType, WorkType>::check_useg()
 
 }
 
-template<typename FuncType, typename BigNumType, typename WorkType> // V
-void ThreadLoopPool<FuncType, BigNumType, WorkType>::check_avalible_threads(unsigned short& avalible_threads)
+template<typename FuncType, typename BigNumType, typename Struct> // V
+void ThreadLoopPool<FuncType, BigNumType, Struct>::check_avalible_threads(unsigned short& avalible_threads)
 {
 	short change = this->check_useg();
 	LOG("Chabge -> " << change);
@@ -279,8 +298,8 @@ inline void print_map(std::unordered_map<K, V> const& m)
 	}
 }
 
-template<typename FuncType, typename BigNumType, typename WorkType> // V
-void ThreadLoopPool<FuncType, BigNumType, WorkType>::start()
+template<typename FuncType, typename BigNumType, typename Struct> // V
+void ThreadLoopPool<FuncType, BigNumType, Struct>::start()
 {
 	this->done = false;
 
@@ -312,7 +331,6 @@ void ThreadLoopPool<FuncType, BigNumType, WorkType>::start()
 		}
 		update_map(this->mp, avalible_threads);
 		
-		this_thread::sleep_for(5s);
 		//cout << "\nThread run num: " << thread_run_num << "\n";
 		//cout << "\nRate: " << ((long long)thread_run_num - PREV_thread_run_num) * Range / 5000000.0f << " MN/s \n";
 		LOG("Avalible threads : " << avalible_threads);
@@ -323,6 +341,7 @@ void ThreadLoopPool<FuncType, BigNumType, WorkType>::start()
 		#ifdef DEBUG
 		print_map(mp);
 		#endif // DEBUG
+		LOG("\n-------------------------\n");
 
 		//gap = PREV_thread_run_num - (thread_run_num) * 100;
 		//cout << "Gap: " << gap << " \n";
@@ -330,13 +349,15 @@ void ThreadLoopPool<FuncType, BigNumType, WorkType>::start()
 		//cout << "Gap of gap: " << gog << " \n";
 		//PREV_gap = (PREV_thread_run_num - (thread_run_num) * 100);
 		//PREV_thread_run_num = thread_run_num;
+
+		this_thread::sleep_for(5s);
 	}
 
 	Tfunc.notify_all();
 }
 
-template<typename FuncType, typename BigNumType, typename WorkType> // V
-void ThreadLoopPool<FuncType, BigNumType, WorkType>::dummyFunc(BigNumType& steap, bool& ddone)
+template<typename FuncType, typename BigNumType, typename Struct> // V
+void ThreadLoopPool<FuncType, BigNumType, Struct>::dummyFunc(BigNumType& steap, bool& ddone)
 {
 	while (!ddone)
 	{
@@ -346,8 +367,8 @@ void ThreadLoopPool<FuncType, BigNumType, WorkType>::dummyFunc(BigNumType& steap
 	}
 }
 
-template<typename FuncType, typename BigNumType, typename WorkType> // V
-BigNumType ThreadLoopPool<FuncType, BigNumType, WorkType>::set_step_leangth()
+template<typename FuncType, typename BigNumType, typename Struct> // V
+BigNumType ThreadLoopPool<FuncType, BigNumType, Struct>::set_step_leangth()
 {
 	bool ddone = false;
 	BigNumType steap(0);
@@ -356,7 +377,7 @@ BigNumType ThreadLoopPool<FuncType, BigNumType, WorkType>::set_step_leangth()
 	this_thread::sleep_for(10s); // 10
 	ddone = true;
 	wrk.join();
-	LOG("Finished set_step_leangth");
+	LOG("Finished set_step_leangth\n");
 	return steap;
 	// יש כאן בעיה רציני אם איך שאני קורא לפונק' ומתשמש בטווח
 	// אם הפונק לא מקבלת טווח הבדיקת טווח תרוץ לנצח

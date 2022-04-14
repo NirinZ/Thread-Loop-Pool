@@ -27,7 +27,7 @@ using MapIter = unordered_map<thread::id, bool>::iterator;
 
 /*Class*/
 
-template<typename FuncType=void(*)(), typename BigNumType=int, typename WorkType = int>
+template<typename FuncType=void(*)(int, int), typename BigNumType=int, typename WorkType = int>
 class ThreadLoopPool
 {
 public:
@@ -59,8 +59,8 @@ public:
 
 	void wrapperFunc();
 
-	template<typename AssigneFuncType, typename Targ>
-	void wrapperAssigne(AssigneFuncType func, Targ arg);
+	template<typename AssigneFuncType, typename TypeArg>
+	void wrapperAssigne(AssigneFuncType func, TypeArg arg);
 
 	void update_map(unordered_map<thread::id, bool>& u_map, int range);
 
@@ -84,7 +84,7 @@ private:
 template<typename FuncType, typename BigNumType, typename WorkType>
 ThreadLoopPool<FuncType, BigNumType, WorkType>::ThreadLoopPool()
 {
-	cout << "The empty constructer is working!\n";
+	LOG("The empty constructer is working!");
 }
 
 template<typename FuncType, typename BigNumType, typename WorkType>
@@ -92,7 +92,9 @@ ThreadLoopPool<FuncType, BigNumType, WorkType>::ThreadLoopPool(FuncType f, WorkT
 func{ f },
 obj{ obj },
 step_leangth(set_step_leangth())
-{}
+{
+	LOG("The ACTUAL constructer is working!");
+}
 
 template<typename FuncType, typename BigNumType, typename WorkType>
 void ThreadLoopPool<FuncType, BigNumType, WorkType>::linkTheFunc(FuncType f, WorkType obj)
@@ -106,8 +108,8 @@ void ThreadLoopPool<FuncType, BigNumType, WorkType>::linkTheFunc(FuncType f, Wor
 }
 
 template<typename FuncType, typename BigNumType, typename WorkType>
-template<typename AssigneFuncType, typename Targ>
-void ThreadLoopPool<FuncType, BigNumType, WorkType>::wrapperAssigne(AssigneFuncType func, Targ arg)
+template<typename AssigneFuncType, typename TypeArg>
+void ThreadLoopPool<FuncType, BigNumType, WorkType>::wrapperAssigne(AssigneFuncType func, TypeArg arg)
 {
 	if (muDone.try_lock())
 	{
@@ -142,7 +144,8 @@ void ThreadLoopPool<FuncType, BigNumType, WorkType>::wrapperFunc()
 			this->mp[this_thread::get_id()] = true; // Inisialize the thread in the Map (Happend only the first time the thread reaches here)
 		}
 
-		this->func(range,this->obj);
+									 // The main function
+		this->func(range,this->obj); // לפי הגרסה הזו, בתוך הפונק של הלקוח אמורה להיות הבדיקה של נכון או לא
 
 		this->muMap.lock();
 		another_run = this->mp[this_thread::get_id()] == true;
@@ -200,23 +203,18 @@ void ThreadLoopPool<FuncType, BigNumType, WorkType>::update_map(unordered_map<th
 template<typename FuncType, typename BigNumType, typename WorkType> // V
 short ThreadLoopPool<FuncType, BigNumType, WorkType>::check_useg()
 {
-	short program_usaged;
-	short all_usaged;
-	short* cpuUsage;
-	cpuUsage = this->usage.GetUsage();
-	program_usaged = cpuUsage[0];
-	all_usaged = cpuUsage[1];
+	CpuUsage::CpuValues cpuValues = this->usage.GetUsage();
 
 	//30/100
-	float should_be = (all_usaged * 30) / 100;
-	float now = program_usaged * 100.0 / all_usaged;
-	float gap = should_be - program_usaged;
+	float should_be = (cpuValues.system_usage * 30) / 100;
+	float now = cpuValues.program_usage * 100.0 / cpuValues.system_usage;
+	float gap = should_be - cpuValues.program_usage;
 
-	cout << "PROG -> " << program_usaged << "%\n";
-	cout << "ALL -> " << all_usaged << "%\n";
-	cout << "NOW -> " << now << "% (of 30%)\n";
-	cout << "SHOULD -> " << should_be << "%\n";
-	cout << "GAP -> " << gap << "%\n";
+	LOG("PROG -> " << cpuValues.program_usage);
+	LOG("ALL -> " << cpuValues.system_usage << "%");
+	LOG("NOW -> " << now << "% (of 30%)");
+	LOG("SHOULD -> " << should_be << "%");
+	LOG("GAP -> " << gap << "%");
 
 	if (gap > 25)
 	{
@@ -250,7 +248,7 @@ template<typename FuncType, typename BigNumType, typename WorkType> // V
 void ThreadLoopPool<FuncType, BigNumType, WorkType>::check_avalible_threads(unsigned short& avalible_threads)
 {
 	short change = this->check_useg();
-	cout << "Chabge -> " << change << "\n";
+	LOG("Chabge -> " << change);
 
 	if (change == 0)
 		return;
@@ -270,6 +268,14 @@ void ThreadLoopPool<FuncType, BigNumType, WorkType>::check_avalible_threads(unsi
 	{
 		avalible_threads = 1;
 		this->delay += (-change);
+	}
+}
+
+template<typename K, typename V>
+inline void print_map(std::unordered_map<K, V> const& m)
+{
+	for (auto const& pair : m) {
+		std::cout << "{" << pair.first << ": " << boolalpha << pair.second << "}\n";
 	}
 }
 
@@ -293,28 +299,31 @@ void ThreadLoopPool<FuncType, BigNumType, WorkType>::start()
 
 	while (!this->done)
 	{
-		if (new_threads > 0)
+		while (new_threads--)
 		{
 			fl.emplace_back(async(launch::async, [this]() {this->wrapperFunc();}));
-			new_threads--;
-		}
-		else
+		} new_threads++; // because this operation decrece the value 2 times, so it return to the max of the U_short
+
+		check_avalible_threads(avalible_threads);
+		if (avalible_threads > total_num_of_threads)
 		{
-			check_avalible_threads(avalible_threads);
-			if (avalible_threads > total_num_of_threads)
-			{
-				new_threads = avalible_threads - total_num_of_threads;
-				total_num_of_threads = avalible_threads;
-			}
-			update_map(this->mp, avalible_threads);
+			new_threads = avalible_threads - total_num_of_threads;
+			total_num_of_threads = avalible_threads;
 		}
+		update_map(this->mp, avalible_threads);
+		
 		this_thread::sleep_for(5s);
 		//cout << "\nThread run num: " << thread_run_num << "\n";
 		//cout << "\nRate: " << ((long long)thread_run_num - PREV_thread_run_num) * Range / 5000000.0f << " MN/s \n";
-		cout << "\nAvalible threads: " << avalible_threads << " \n";
-		cout << "Delay = " << this->delay << "\n";
-		cout << "Check num: " << (this->thread_run_num)*this->step_leangth << " \n";
-		cout << "Steap: " << this->step_leangth << " \n";
+		LOG("Avalible threads : " << avalible_threads);
+		LOG("Delay = " << this->delay);
+		LOG("Check num: " << (this->thread_run_num)*this->step_leangth);
+		LOG("Steap: " << this->step_leangth);
+		LOG("Map: ");
+		#ifdef DEBUG
+		print_map(mp);
+		#endif // DEBUG
+
 		//gap = PREV_thread_run_num - (thread_run_num) * 100;
 		//cout << "Gap: " << gap << " \n";
 		//gog = PREV_gap - (PREV_thread_run_num - (thread_run_num) * 100);
@@ -323,7 +332,7 @@ void ThreadLoopPool<FuncType, BigNumType, WorkType>::start()
 		//PREV_thread_run_num = thread_run_num;
 	}
 
-
+	Tfunc.notify_all();
 }
 
 template<typename FuncType, typename BigNumType, typename WorkType> // V
@@ -343,12 +352,14 @@ BigNumType ThreadLoopPool<FuncType, BigNumType, WorkType>::set_step_leangth()
 	bool ddone = false;
 	BigNumType steap(0);
 	thread wrk([this](BigNumType& steap, bool& ddone) { this->dummyFunc(steap, ddone);}, ref(steap), ref(ddone)); 
-	// /\ might have a prolem here with calling the refrence 2 times...
-	// The main func
-	this_thread::sleep_for(10s);
+	// /\ The main func
+	this_thread::sleep_for(10s); // 10
 	ddone = true;
 	wrk.join();
 	LOG("Finished set_step_leangth");
 	return steap;
+	// יש כאן בעיה רציני אם איך שאני קורא לפונק' ומתשמש בטווח
+	// אם הפונק לא מקבלת טווח הבדיקת טווח תרוץ לנצח
+	// ואם כן, אני לא שולח טוב את הטווח בראפר למעלה! אבל אני חייב לישון
 }
 

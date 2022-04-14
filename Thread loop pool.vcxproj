@@ -73,15 +73,19 @@
   <PropertyGroup Label="UserMacros" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <LinkIncremental>true</LinkIncremental>
+    <IncludePath>$(IncludePath)</IncludePath>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
     <LinkIncremental>false</LinkIncremental>
+    <IncludePath>$(IncludePath)</IncludePath>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
     <LinkIncremental>true</LinkIncremental>
+    <IncludePath>$(IncludePath)</IncludePath>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
     <LinkIncremental>false</LinkIncremental>
+    <IncludePath>$(IncludePath)</IncludePath>
   </PropertyGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <ClCompile>
@@ -89,11 +93,16 @@
       <SDLCheck>true</SDLCheck>
       <PreprocessorDefinitions>WIN32;_DEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
+      <AdditionalIncludeDirectories>C:\Users\zniri\Desktop\Coding\Languages\C++\C++ Libs\BigInt;C:\Users\zniri\Desktop\Coding\Languages\C++\C++ Libs\CpuUsage</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
       <GenerateDebugInformation>true</GenerateDebugInformation>
-      <AdditionalDependencies>"C:\Users\zniri\Desktop\Coding\Languages\C++\C++ Libs\CpuUsage\Release\CpuUsage.lib";"C:\Users\zniri\Desktop\Coding\Languages\C++\C++ Libs\BigInt\x64\Release\BigInt.lib";%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>"C:\Users\zniri\Desktop\Coding\Languages\C++\C++ Libs\CpuUsage\x64\Release\CpuUsage.lib";"C:\Users\zniri\Desktop\Coding\Languages\C++\C++ Libs\BigInt\x64\Release\BigInt.lib";%(AdditionalDependencies)</AdditionalDependencies>
+      <Version>
+      </Version>
+      <EntryPointSymbol>
+      </EntryPointSymbol>
     </Link>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
@@ -104,13 +113,18 @@
       <SDLCheck>true</SDLCheck>
       <PreprocessorDefinitions>WIN32;NDEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
+      <AdditionalIncludeDirectories>C:\Users\zniri\Desktop\Coding\Languages\C++\C++ Libs\BigInt;C:\Users\zniri\Desktop\Coding\Languages\C++\C++ Libs\CpuUsage</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
       <EnableCOMDATFolding>true</EnableCOMDATFolding>
       <OptimizeReferences>true</OptimizeReferences>
       <GenerateDebugInformation>true</GenerateDebugInformation>
-      <AdditionalDependencies>"C:\Users\zniri\Desktop\Coding\Languages\C++\C++ Libs\CpuUsage\Release\CpuUsage.lib";"C:\Users\zniri\Desktop\Coding\Languages\C++\C++ Libs\BigInt\x64\Release\BigInt.lib";%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>"C:\Users\zniri\Desktop\Coding\Languages\C++\C++ Libs\CpuUsage\x64\Release\CpuUsage.lib";"C:\Users\zniri\Desktop\Coding\Languages\C++\C++ Libs\BigInt\x64\Release\BigInt.lib";%(AdditionalDependencies)</AdditionalDependencies>
+      <Version>
+      </Version>
+      <EntryPointSymbol>
+      </EntryPointSymbol>
     </Link>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
@@ -119,11 +133,16 @@
       <SDLCheck>true</SDLCheck>
       <PreprocessorDefinitions>_DEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
+      <AdditionalIncludeDirectories>C:\Users\zniri\Desktop\Coding\Languages\C++\C++ Libs\BigInt;C:\Users\zniri\Desktop\Coding\Languages\C++\C++ Libs\CpuUsage</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
       <GenerateDebugInformation>true</GenerateDebugInformation>
-      <AdditionalDependencies>"C:\Users\zniri\Desktop\Coding\Languages\C++\C++ Libs\CpuUsage\Release\CpuUsage.lib";"C:\Users\zniri\Desktop\Coding\Languages\C++\C++ Libs\BigInt\x64\Release\BigInt.lib";%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>"C:\Users\zniri\Desktop\Coding\Languages\C++\C++ Libs\CpuUsage\x64\Release\CpuUsage.lib";"C:\Users\zniri\Desktop\Coding\Languages\C++\C++ Libs\BigInt\x64\Release\BigInt.lib";%(AdditionalDependencies)</AdditionalDependencies>
+      <Version>
+      </Version>
+      <EntryPointSymbol>
+      </EntryPointSymbol>
     </Link>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
@@ -134,17 +153,26 @@
       <SDLCheck>true</SDLCheck>
       <PreprocessorDefinitions>NDEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
+      <AdditionalIncludeDirectories>C:\Users\zniri\Desktop\Coding\Languages\C++\C++ Libs\BigInt;C:\Users\zniri\Desktop\Coding\Languages\C++\C++ Libs\CpuUsage</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
       <EnableCOMDATFolding>true</EnableCOMDATFolding>
       <OptimizeReferences>true</OptimizeReferences>
       <GenerateDebugInformation>true</GenerateDebugInformation>
-      <AdditionalDependencies>"C:\Users\zniri\Desktop\Coding\Languages\C++\C++ Libs\CpuUsage\Release\CpuUsage.lib";"C:\Users\zniri\Desktop\Coding\Languages\C++\C++ Libs\BigInt\x64\Release\BigInt.lib";%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>"C:\Users\zniri\Desktop\Coding\Languages\C++\C++ Libs\CpuUsage\x64\Release\CpuUsage.lib";"C:\Users\zniri\Desktop\Coding\Languages\C++\C++ Libs\BigInt\x64\Release\BigInt.lib";%(AdditionalDependencies)</AdditionalDependencies>
+      <Version>
+      </Version>
+      <EntryPointSymbol>
+      </EntryPointSymbol>
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClInclude Include="ThreadLoopPool.h" />
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="TLP - test =Simple=.cpp" />
+    <Text Include="TLP - test.cpp" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

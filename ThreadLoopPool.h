@@ -24,6 +24,7 @@
 #include <future>
 #include <mutex>
 #include <vector>
+//#include <concepts>
 #include <unordered_map>
 #include <condition_variable>
 #include "CpuUsage.h" // lib \ cpp + include directories
@@ -44,9 +45,27 @@ using namespace std;
 using namespace literals::chrono_literals;
 using MapIter = unordered_map<thread::id, bool>::iterator;
 
+
+template<typename T>
+concept Number = requires(T t1, T t2)
+{
+	t1++;
+	t1--;
+	t1 + t2;
+	t1 - t2;
+	t1* t2;
+	t1 / t2;
+	t1 == t2;
+	t1 != t2;
+	t1 < t2;
+	t1 > t2;
+	t1 <= t2;
+	t1 >= t2;
+};
+
 /*Class*/
 
-template<typename FuncType=void(*)(int, int), typename BigNumType=int, typename Struct = int>
+template<typename FuncType=void(*)(int, int), Number BigNumType=int, typename Struct = int>
 class ThreadLoopPool
 {
 public:

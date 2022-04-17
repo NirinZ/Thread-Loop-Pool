@@ -31,7 +31,7 @@
 // ע"מ לגרום לקיצורים האלו לעבוד צריך: 1) להכניס את התיקיה בכניסה של התיקיות + להכניס את הקובץ ליב או סי פי פי 
 // את התיקיה צריך להכניס ע"מ שלא נצתרך לכתוב את כל הנתיב כל פעם כמו בשורה למטה
 // וככה ניתן לכתוב בקיצור כמו בשורה למעלה
-//#include "C:\Users\zniri\Desktop\Coding\Languages\C++\C++ Libs\CpuUsage\CpuUsage.h" <- lib \ cpp
+//#include "C:\Users\zniri\Desktop\Coding\Languages\C++\C++ Libs\CpuUsage\CpuUsage.h" // <- lib \ cpp
 #include "C:\Users\zniri\Desktop\Coding\Languages\C++\C++ Libs\BigInt\BigInt.h"
 
 #ifdef _DEBUG
@@ -77,7 +77,7 @@ public:
 	//ThreadLoopPool(void(*f)());
 	//~ThreadLoopPool();
 	
-	bool done;
+	bool done = false;
 	mutex muThreadRunNum;
 	mutex muDone;
 	mutex muMap;
@@ -119,13 +119,13 @@ private:
 
 /*Definnitions*/
 
-template<typename FuncType, typename BigNumType, typename Struct>
+template<typename FuncType, Number BigNumType, typename Struct>
 ThreadLoopPool<FuncType, BigNumType, Struct>::ThreadLoopPool()
 {
 	LOG("The empty constructer is working!");
 }
 
-template<typename FuncType, typename BigNumType, typename Struct>
+template<typename FuncType, Number BigNumType, typename Struct>
 ThreadLoopPool<FuncType, BigNumType, Struct>::ThreadLoopPool(FuncType f, Struct obj) :
 func{ f },
 obj{ obj },
@@ -134,7 +134,7 @@ step_leangth(set_step_leangth())
 	LOG("The ACTUAL constructer is working!");
 }
 
-template<typename FuncType, typename BigNumType, typename Struct>
+template<typename FuncType, Number BigNumType, typename Struct>
 void ThreadLoopPool<FuncType, BigNumType, Struct>::linkTheFunc(FuncType f, Struct obj)
 {
 	this->func = f;
@@ -145,7 +145,7 @@ void ThreadLoopPool<FuncType, BigNumType, Struct>::linkTheFunc(FuncType f, Struc
 	}
 }
 
-template<typename FuncType, typename BigNumType, typename Struct>
+template<typename FuncType, Number BigNumType, typename Struct>
 template<typename AssigneFuncType, typename TypeArg>
 void ThreadLoopPool<FuncType, BigNumType, Struct>::wrapperAssigne(AssigneFuncType func, TypeArg arg)
 {
@@ -164,7 +164,7 @@ void ThreadLoopPool<FuncType, BigNumType, Struct>::wrapperAssigne(AssigneFuncTyp
 	}
 }
 
-template<typename FuncType, typename BigNumType, typename Struct> // V
+template<typename FuncType, Number BigNumType, typename Struct> // V
 void ThreadLoopPool<FuncType, BigNumType, Struct>::wrapperFunc()
 {
 	bool another_run;
@@ -200,7 +200,7 @@ void ThreadLoopPool<FuncType, BigNumType, Struct>::wrapperFunc()
 	}
 }
 
-template<typename FuncType, typename BigNumType, typename Struct> // V
+template<typename FuncType, Number BigNumType, typename Struct> // V
 void ThreadLoopPool<FuncType, BigNumType, Struct>::update_map(unordered_map<thread::id, bool>& u_map, int range)
 { // range = now avalible threads
 	unsigned short prviosOnThreads = 0;
@@ -238,7 +238,7 @@ void ThreadLoopPool<FuncType, BigNumType, Struct>::update_map(unordered_map<thre
 
 }
 
-template<typename FuncType, typename BigNumType, typename Struct> // V
+template<typename FuncType, Number BigNumType, typename Struct> // V
 short ThreadLoopPool<FuncType, BigNumType, Struct>::check_useg()
 {
 	CpuUsage::CpuValues cpuValues = this->usage.GetUsage();
@@ -282,7 +282,7 @@ short ThreadLoopPool<FuncType, BigNumType, Struct>::check_useg()
 
 }
 
-template<typename FuncType, typename BigNumType, typename Struct> // V
+template<typename FuncType, Number BigNumType, typename Struct> // V
 void ThreadLoopPool<FuncType, BigNumType, Struct>::check_avalible_threads(unsigned short& avalible_threads)
 {
 	short change = this->check_useg();
@@ -317,7 +317,7 @@ inline void print_map(std::unordered_map<K, V> const& m)
 	}
 }
 
-template<typename FuncType, typename BigNumType, typename Struct> // V
+template<typename FuncType, Number BigNumType, typename Struct> // V
 void ThreadLoopPool<FuncType, BigNumType, Struct>::start()
 {
 	this->done = false;
@@ -357,9 +357,10 @@ void ThreadLoopPool<FuncType, BigNumType, Struct>::start()
 		LOG("Check num: " << (this->thread_run_num)*this->step_leangth);
 		LOG("Steap: " << this->step_leangth);
 		LOG("Map: ");
-		#ifdef DEBUG
+		#ifdef _DEBUG
 		print_map(mp);
 		#endif // DEBUG
+		LOG("Speed: " << ((long long)thread_run_num - PREV_thread_run_num) * step_leangth / 5000000.0f << " MN/s");
 		LOG("\n-------------------------\n");
 
 		//gap = PREV_thread_run_num - (thread_run_num) * 100;
@@ -367,7 +368,7 @@ void ThreadLoopPool<FuncType, BigNumType, Struct>::start()
 		//gog = PREV_gap - (PREV_thread_run_num - (thread_run_num) * 100);
 		//cout << "Gap of gap: " << gog << " \n";
 		//PREV_gap = (PREV_thread_run_num - (thread_run_num) * 100);
-		//PREV_thread_run_num = thread_run_num;
+		PREV_thread_run_num = thread_run_num;
 
 		this_thread::sleep_for(5s);
 	}
@@ -375,7 +376,7 @@ void ThreadLoopPool<FuncType, BigNumType, Struct>::start()
 	Tfunc.notify_all();
 }
 
-template<typename FuncType, typename BigNumType, typename Struct> // V
+template<typename FuncType, Number BigNumType, typename Struct> // V
 void ThreadLoopPool<FuncType, BigNumType, Struct>::dummyFunc(BigNumType& steap, bool& ddone)
 {
 	while (!ddone)
@@ -386,7 +387,7 @@ void ThreadLoopPool<FuncType, BigNumType, Struct>::dummyFunc(BigNumType& steap, 
 	}
 }
 
-template<typename FuncType, typename BigNumType, typename Struct> // V
+template<typename FuncType, Number BigNumType, typename Struct> // V
 BigNumType ThreadLoopPool<FuncType, BigNumType, Struct>::set_step_leangth()
 {
 	bool ddone = false;

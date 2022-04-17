@@ -1,21 +1,24 @@
-#include <iostream>
-#include <chrono>
-#include <future>
-#include <mutex>
-#include <vector>
-#include <unordered_map>
-#include <condition_variable>
-#include "bigint.h"
-#include "C:\Users\zniri\Desktop\Coding\Languages\C++\C++ Libs\CpuUsage\CpuUsage.h"
-#include <string>
-#include <thread>
+//#include <iostream>
+//#include <chrono>
+//#include <future>
+//#include <mutex>
+//#include <vector>
+//#include <unordered_map>
+//#include <condition_variable>
+//#include "bigint.h"
+//#include "C:\Users\zniri\Desktop\Coding\Languages\C++\C++ Libs\CpuUsage\CpuUsage.h"
+//#include <string>
+//#include <thread>
+//#include "ThreadLoopPool.h"
+//#include <typeinfo>
+
 #include "ThreadLoopPool.h"
-#include <typeinfo>
+
 
 struct Timer
 {
 	chrono::time_point<chrono::steady_clock> start, end;
-	chrono::duration<double> duration;
+	chrono::duration<double> duration {};
 
 	Timer()
 	{
@@ -37,7 +40,7 @@ unsigned long long num = 51473836438; // 51473836470
 
 struct Args {
 	int arg1 = 999;
-	float arg2;
+	float arg2 = 4.6;
 };
 
 void func(unsigned long long range, Args args);
